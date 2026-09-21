@@ -184,3 +184,107 @@ t.test(
 ```
 
 I used Welch's two-sample t-test as the primary analysis because it does not require equal population variances. I also checked the equal-variance version as a sensitivity analysis.Both t-tests lead to the same conclusion. Although the observed mean grain yield was slightly higher in Season 1 (3428.452) than in Season 2 (3408.655), **the difference was not statistically significant at the 0.05 significance level**. Therefore, based on these t-tests, we do not have sufficient evidence that mean grain yield differs between the two seasons.
+
+```{r}
+#problem 2.1 import dataset
+adult <- read.csv(
+  "adult.data",
+  header = FALSE,
+  na.strings = "?",
+  strip.white = TRUE
+)
+
+names(adult) <- c(
+  "age",
+  "workclass",
+  "fnlwgt",
+  "education",
+  "education_num",
+  "marital_status",
+  "occupation",
+  "relationship",
+  "race",
+  "sex",
+  "capital_gain",
+  "capital_loss",
+  "hours_per_week",
+  "native_country",
+  "income"
+)
+dim(adult)
+```
+
+### Interpretation2.1
+
+By importing dataset, we know that there are **32561 observations** and **15 variables.**
+
+```{r}
+#problem 2.2 clean and simplify the variable names
+names(adult)
+```
+
+### Interpretation2.2
+
+The variable names were cleaned by replacing hyphens with underscores and using concise, descriptive names that are easier to work with in R.
+
+```{r}
+#problem 2.3 examine missing values
+colSums(is.na(adult))
+```
+
+### Interpretation2.3
+
+Missing values are present in three variables: workclass (1,836), occupation (1,843), and native country (583). All other variables have no missing observations.
+
+```{r}
+#problem 2.4 choose restricted samples
+nrow(adult)#before filtering
+adult_hours <- subset(adult, hours_per_week >= 10)
+nrow(adult_hours)#after filtering
+```
+
+### Interpretation2.4
+
+Before filtering:32561
+
+After filtering:32103
+
+```{r}
+#problem 2.5 remove observations
+adult_clean <- subset(
+  adult_hours,
+  !is.na(occupation) &
+    !is.na(workclass) &
+    !is.na(native_country)
+)
+nrow(adult_clean)
+colSums(is.na(adult_clean))
+```
+
+### Interpretation2.5
+
+These observations were removed because occupation, workclass, and native country are required variables, and missing values would prevent us from using these observations reliably in the analysis.
+
+```{r}
+#problem 2.6 remove selected values
+adult_clean <- subset(
+  adult_clean,
+  age >= 18 &
+    age <= 90 &
+    education != "Preschool"
+)
+nrow(adult_clean)
+```
+
+### Interpretation2.6
+
+Observations with age below 18, age above 90, or education level equal to Preschool were removed. The resulting final sample contains **29523** observations.
+
+```{r}
+#problem 2.7 final sample size
+cat("Final sample size:", nrow(adult_clean), "\n")
+```
+
+### Interpretation2.7
+
+Final sample size is **29523**

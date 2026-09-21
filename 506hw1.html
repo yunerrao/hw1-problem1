@@ -2564,6 +2564,169 @@ mean in group 1 mean in group 2
 </div>
 </div>
 <p>I used Welch’s two-sample t-test as the primary analysis because it does not require equal population variances. I also checked the equal-variance version as a sensitivity analysis.Both t-tests lead to the same conclusion. Although the observed mean grain yield was slightly higher in Season 1 (3428.452) than in Season 2 (3408.655), <strong>the difference was not statistically significant at the 0.05 significance level</strong>. Therefore, based on these t-tests, we do not have sufficient evidence that mean grain yield differs between the two seasons.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.1 import dataset</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>adult <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;adult.data&quot;</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.strings =</span> <span class="st">&quot;?&quot;</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">strip.white =</span> <span class="cn">TRUE</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(adult) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;age&quot;</span>,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;workclass&quot;</span>,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;fnlwgt&quot;</span>,</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;education&quot;</span>,</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;education_num&quot;</span>,</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;marital_status&quot;</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;occupation&quot;</span>,</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;relationship&quot;</span>,</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;race&quot;</span>,</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;sex&quot;</span>,</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;capital_gain&quot;</span>,</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;capital_loss&quot;</span>,</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;hours_per_week&quot;</span>,</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;native_country&quot;</span>,</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;income&quot;</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(adult)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32561    15</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.1" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.1">Interpretation2.1</h3>
+<p>By importing dataset, we know that there are <strong>32561 observations</strong> and <strong>15 variables.</strong></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.2 clean and simplify the variable names</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(adult)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] &quot;age&quot;            &quot;workclass&quot;      &quot;fnlwgt&quot;         &quot;education&quot;     
+ [5] &quot;education_num&quot;  &quot;marital_status&quot; &quot;occupation&quot;     &quot;relationship&quot;  
+ [9] &quot;race&quot;           &quot;sex&quot;            &quot;capital_gain&quot;   &quot;capital_loss&quot;  
+[13] &quot;hours_per_week&quot; &quot;native_country&quot; &quot;income&quot;        </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.2" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.2">Interpretation2.2</h3>
+<p>The variable names were cleaned by replacing hyphens with underscores and using concise, descriptive names that are easier to work with in R.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.3 examine missing values</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(adult))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           age      workclass         fnlwgt      education  education_num 
+             0           1836              0              0              0 
+marital_status     occupation   relationship           race            sex 
+             0           1843              0              0              0 
+  capital_gain   capital_loss hours_per_week native_country         income 
+             0              0              0            583              0 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.3" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.3">Interpretation2.3</h3>
+<p>Missing values are present in three variables: workclass (1,836), occupation (1,843), and native country (583). All other variables have no missing observations.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.4 choose restricted samples</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(adult)<span class="co">#before filtering</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32561</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>adult_hours <span class="ot">&lt;-</span> <span class="fu">subset</span>(adult, hours_per_week <span class="sc">&gt;=</span> <span class="dv">10</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(adult_hours)<span class="co">#after filtering</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32103</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.4" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.4">Interpretation2.4</h3>
+<p>Before filtering:32561</p>
+<p>After filtering:32103</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.5 remove observations</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>adult_clean <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  adult_hours,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">is.na</span>(occupation) <span class="sc">&amp;</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(workclass) <span class="sc">&amp;</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(native_country)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(adult_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 29873</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(adult_clean))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           age      workclass         fnlwgt      education  education_num 
+             0              0              0              0              0 
+marital_status     occupation   relationship           race            sex 
+             0              0              0              0              0 
+  capital_gain   capital_loss hours_per_week native_country         income 
+             0              0              0              0              0 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.5" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.5">Interpretation2.5</h3>
+<p>These observations were removed because occupation, workclass, and native country are required variables, and missing values would prevent us from using these observations reliably in the analysis.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.6 remove selected values</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>adult_clean <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  adult_clean,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  age <span class="sc">&gt;=</span> <span class="dv">18</span> <span class="sc">&amp;</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">&lt;=</span> <span class="dv">90</span> <span class="sc">&amp;</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    education <span class="sc">!=</span> <span class="st">&quot;Preschool&quot;</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(adult_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 29523</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.6" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.6">Interpretation2.6</h3>
+<p>Observations with age below 18, age above 90, or education level equal to Preschool were removed. The resulting final sample contains <strong>29523</strong> observations.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co">#problem 2.7 final sample size</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Final sample size:&quot;</span>, <span class="fu">nrow</span>(adult_clean), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Final sample size: 29523 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation2.7" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation2.7">Interpretation2.7</h3>
+<p>Final sample size is <strong>29523</strong></p>
 </section>
 
 </main>
