@@ -1,0 +1,186 @@
+---
+title: "hw1"
+author: "yuner rao"
+format:
+  html:
+    self-contained: true
+    code-fold: true
+editor: visual
+---
+
+```{r}
+#1.1 importing dataset
+soybean <- read.csv("data.csv")
+
+names(soybean) <- c(
+  "Season",
+  "Cultivar",
+  "Repetition",
+  "PH",
+  "IFP",
+  "NLP",
+  "NGP",
+  "NGL",
+  "NS",
+  "MHG",
+  "GY"
+)
+
+head(soybean)
+str(soybean)
+dim(soybean)
+```
+
+### Interpretation1.1
+
+This soybean dataset includes 320 records and 11 columns. `Season`, `Cultivar`, and `Repetition` are grouping factors for the field experiment. The other variables are numeric agronomic traits. The `str()` function confirms variable types, and `head()` shows the renamed columns are loaded correctly.
+
+```{r}
+#problem 1.2 verify dataset
+nrow(soybean)
+length(unique(soybean$Cultivar))
+unique(soybean$Season)
+length(unique(soybean$Season))
+season_counts <- table(soybean$Season)
+
+season_counts
+```
+
+### Interpretation1.2
+
+The code verifies there are 320 observations and 40 unique cultivars in the soybean dataset. Data was collected from two seasons. The table of counts shows an equal number of 160 observations for each season, forming a balanced experimental design.
+
+```{r}
+#problrm 1.3.1 calculate Pearson correlation coefficient
+cor(soybean$PH, soybean$GY)
+```
+
+### Interpretation1.3.1
+
+the Pearson correlation between plant height (PH) and (GY) is **0.1232807**. This indicates a positive liner association between plant height and grain yield.
+
+```{r}
+#problrm 1.3.2 calculate Pearson correlation for each season and compare the values
+cor_season_1 <- with(
+  soybean[soybean$Season == 1, ],
+  cor(PH, GY)
+)
+
+cor_season_2 <- with(
+  soybean[soybean$Season == 2, ],
+  cor(PH, GY)
+)
+
+cor_season_1
+cor_season_2
+if (cor_season_1 > cor_season_2) {
+  "Season 1 has the higher correlation."
+} else {
+  "Season 2 has the higher correlation."
+}
+```
+
+### Interpretation1.3.2
+
+Compared with Season2, **Season 1 a has the higher correlation**.
+
+```{r}
+#problem 1.3.3 calculate the GY of the soybean observation with the greatest height
+soybean[which.max(soybean$PH), ]
+```
+
+### Interpretation1.3.3
+
+The greatest plant height is 94.8 cm. This observation corresponds to cultivar FTR 4288 IPRO in Season 2 (Repetition 3), with a grain yield of approximately **3304.68**.
+
+```{r}
+#the percentage of observations
+mean_MHG <- mean(soybean$MHG)
+mean_MHG
+mean_MHG <- mean(soybean$MHG)
+
+percentage <- mean(soybean$MHG > mean_MHG) * 100
+
+percentage
+```
+
+### Interpretation1.3.4
+
+**47.1875%** Observations have a thousand seed weight greater than the overall average thousand seed weight.
+
+```{r}
+# problem 1.3.5 who has highest GY
+cultivar_GY <- aggregate(
+  GY ~ Cultivar,
+  data = soybean,
+  FUN = mean
+)
+
+cultivar_GY[
+  which.max(cultivar_GY$GY),
+]
+```
+
+### Interpretation1.3.5
+
+**98R30CE** has the highest average GY
+
+```{r}
+#problem 1.4 establish a table showing the two average values
+quant_vars <- c(
+  "PH", "IFP", "NLP", "NGP",
+  "NGL", "NS", "MHG", "GY"
+)
+
+overall_means <- colMeans(
+  soybean[, quant_vars]
+)
+
+overall_means
+season_means <- aggregate(
+  soybean[, quant_vars],
+  by = list(Season = soybean$Season),
+  FUN = mean
+)
+
+season_means
+overall <- data.frame(
+  Season = "Overall",
+  t(overall_means),
+  check.names = FALSE
+)
+```
+
+```{r}
+#problem 1.5 carry out a series of t-tests 
+```
+
+### Interpretation1.5
+
+Null and alternative hypotheses.
+
+```         
+$H_0: \mu_1 = \mu_2$
+$H_A: \mu_1 \neq \mu_2$
+```
+
+```{r}
+#t-test(Welch)
+t_test_result <- t.test(
+  GY ~ Season,
+  data = soybean
+)
+
+t_test_result
+```
+
+```{r}
+#t-test(equal-variance)
+t.test(
+  GY ~ Season,
+  data = soybean,
+  var.equal = TRUE
+)
+```
+
+I used Welch's two-sample t-test as the primary analysis because it does not require equal population variances. I also checked the equal-variance version as a sensitivity analysis.Both t-tests lead to the same conclusion. Although the observed mean grain yield was slightly higher in Season 1 (3428.452) than in Season 2 (3408.655), **the difference was not statistically significant at the 0.05 significance level**. Therefore, based on these t-tests, we do not have sufficient evidence that mean grain yield differs between the two seasons.
