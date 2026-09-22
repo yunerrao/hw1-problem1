@@ -288,3 +288,101 @@ cat("Final sample size:", nrow(adult_clean), "\n")
 ### Interpretation2.7
 
 Final sample size is **29523**
+
+```{r}
+#problem 3
+nextHappy <- function(n) {
+  
+  # Check that n is a single positive integer
+  if (length(n) != 1 || !is.numeric(n) ||
+      !is.finite(n) || n <= 0 || n != floor(n)) {
+    stop("n must be a single positive integer.")
+  }
+  
+  # Convert the number to individual digits
+  digits <- as.integer(strsplit(as.character(n), "")[[1]])
+  
+  # Return the sum of squared digits
+  return(sum(digits^2))
+}
+nextHappy(19)
+nextHappy(82)
+
+
+#sequence
+
+happySequence <- function(n) {
+  
+  # Check that n is a single positive integer
+  if (length(n) != 1 || !is.numeric(n) ||
+      !is.finite(n) || n <= 0 || n != floor(n)) {
+    stop("n must be a single positive integer.")
+  }
+  
+  # Store the sequence
+  sequence <- n
+  
+  # Keep track of values that have already appeared
+  seen <- n
+  
+  while (n != 1) {
+    
+    # Compute the next value
+    n <- nextHappy(n)
+    
+    # Check whether a cycle has occurred
+    if (n %in% seen) {
+      return(list(
+        sequence = c(sequence, n),
+        isHappy = FALSE
+      ))
+    }
+    
+    # Add the new value to the sequence
+    sequence <- c(sequence, n)
+    seen <- c(seen, n)
+  }
+  
+  # The sequence reached 1
+  return(list(
+    sequence = sequence,
+    isHappy = TRUE
+  ))
+}
+happySequence(19)
+happySequence(82)
+```
+
+```{r}
+results <- lapply(1:1000, happySequence)
+
+is_happy <- sapply(
+  results,
+  function(x) x$isHappy
+)
+
+# 1. Number of Happy Numbers
+num_happy <- sum(is_happy)
+num_happy
+
+# 2. Percentage of Happy Numbers
+percent_happy <- mean(is_happy) * 100
+percent_happy
+
+# 3. Longest Happy sequence
+sequence_lengths <- sapply(
+  results,
+  function(x) {
+    if (x$isHappy) length(x$sequence) else NA
+  }
+)
+
+max_length <- max(sequence_lengths, na.rm = TRUE)
+
+longest_values <- which(
+  sequence_lengths == max_length
+)
+
+max_length
+longest_values
+```
